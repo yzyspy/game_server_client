@@ -1,6 +1,10 @@
 package znet
 
-import _ "zinx-server/ziface"
+import (
+	"fmt"
+	"net"
+	_ "zinx-server/ziface"
+)
 
 // Server interface implementation, defines a Server service class
 // (接口实现，定义一个Server服务类)
@@ -22,7 +26,44 @@ type Server struct {
 }
 
 func (s *Server) Start() {
+	go startServer(s)
+}
 
+func startServer(s *Server) {
+	addr, err := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
+	if err != nil {
+		fmt.Println("ResolveTCPAddr err:", err)
+		return
+	}
+
+	listener, err := net.ListenTCP(s.IPVersion, addr)
+	if err != nil {
+		fmt.Println("ListenTCP err:", err)
+		return
+	}
+	fmt.Println("Server is running on", listener.Addr().String())
+	for {
+		conn, err := listener.AcceptTCP()
+		if err != nil {
+			fmt.Println("Accept err:", err)
+			continue
+		}
+		go func() {
+			buf := make([]byte, 1024)
+			for {
+				cnt, errRead := conn.Read(buf)
+				if errRead != nil {
+					fmt.Println("Read err:", errRead)
+					continue
+				}
+				_, errWrite := conn.Write([]byte("echo:" + string(buf[:cnt])))
+				if errWrite != nil {
+					fmt.Println("Write err:", errWrite)
+					continue
+				}
+			}
+		}()
+	}
 }
 
 // Stop stops the server (停止服务)
@@ -31,11 +72,22 @@ func (s *Server) Stop() {
 
 // Serve runs the server (运行服务)
 func (s *Server) Serve() {
-
+	s.Start()
+	select {}
 }
 
 func (s *Server) ServerName() string {
 	return s.Name
+}
+
+func NewServer(name string) *Server {
+	s := &Server{
+		Name:      name,
+		IPVersion: "tcp4",
+		IP:        "0.0.0.0",
+		Port:      8999,
+	}
+	return s
 }
 
 func init() {}
