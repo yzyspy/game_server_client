@@ -2,7 +2,9 @@ package znet
 
 import (
 	"fmt"
+	"math/rand"
 	"net"
+	"time"
 	_ "zinx-server/ziface"
 )
 
@@ -48,7 +50,10 @@ func (s *Server) startServer() {
 			fmt.Println("Accept err:", err)
 			continue
 		}
-		connection := NewConnection(conn, 0, echoFunc)
+		rand.Seed(time.Now().UnixNano())
+		conId := rand.Uint32()
+		connection := NewConnection(conn, conId, echoFunc)
+		fmt.Println("New connection:", conId)
 		connection.Start()
 	}
 }
