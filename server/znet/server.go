@@ -48,12 +48,12 @@ func (s *Server) startServer() {
 			fmt.Println("Accept err:", err)
 			continue
 		}
-		connection := NewConnection(conn, 0, echo)
+		connection := NewConnection(conn, 0, echoFunc)
 		connection.Start()
 	}
 }
 
-func echo(conn *net.TCPConn, data []byte, cnt int) error {
+func echoFunc(conn *net.TCPConn, data []byte, cnt int) error {
 	_, errWrite := conn.Write([]byte("echo to client:" + string(data)))
 	if errWrite != nil {
 		fmt.Println("Write err:", errWrite)
