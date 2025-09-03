@@ -26,10 +26,10 @@ type Server struct {
 }
 
 func (s *Server) Start() {
-	go startServer(s)
+	go s.startServer()
 }
 
-func startServer(s *Server) {
+func (s *Server) startServer() {
 	addr, err := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
 	if err != nil {
 		fmt.Println("ResolveTCPAddr err:", err)
