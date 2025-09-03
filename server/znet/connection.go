@@ -2,6 +2,7 @@ package znet
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"zinx-server/ziface"
 )
@@ -27,6 +28,10 @@ func (c *Connection) StartRead() {
 	for {
 		cnt, errRead := c.Conn.Read(buf)
 		if errRead != nil {
+			if errRead == io.EOF {
+				//	fmt.Println("Connection closed by remote peer.")
+				continue // 跳出循环，优雅地处理连接关闭
+			}
 			fmt.Println("Read err:", errRead)
 			continue
 		}
