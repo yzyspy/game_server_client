@@ -48,22 +48,18 @@ func (s *Server) startServer() {
 			fmt.Println("Accept err:", err)
 			continue
 		}
-		go func() {
-			buf := make([]byte, 1024)
-			for {
-				cnt, errRead := conn.Read(buf)
-				if errRead != nil {
-					fmt.Println("Read err:", errRead)
-					continue
-				}
-				_, errWrite := conn.Write([]byte("echo:" + string(buf[:cnt])))
-				if errWrite != nil {
-					fmt.Println("Write err:", errWrite)
-					continue
-				}
-			}
-		}()
+		connection := NewConnection(conn, 0, echo)
+		connection.Start()
 	}
+}
+
+func echo(conn *net.TCPConn, data []byte, cnt int) error {
+	_, errWrite := conn.Write([]byte("echo to client:" + string(data)))
+	if errWrite != nil {
+		fmt.Println("Write err:", errWrite)
+		return errWrite
+	}
+	return nil
 }
 
 // Stop stops the server (停止服务)

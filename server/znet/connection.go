@@ -1,6 +1,7 @@
 package znet
 
 import (
+	"fmt"
 	"net"
 	"zinx-server/ziface"
 )
@@ -18,8 +19,19 @@ type Connection struct {
 }
 
 func (c *Connection) Start() {
-	//TODO implement me
-	panic("implement me")
+	go c.StartRead()
+}
+
+func (c *Connection) StartRead() {
+	buf := make([]byte, 1024)
+	for {
+		cnt, errRead := c.Conn.Read(buf)
+		if errRead != nil {
+			fmt.Println("Read err:", errRead)
+			continue
+		}
+		c.FuncApi(c.Conn, buf[:cnt], cnt)
+	}
 }
 
 func (c *Connection) Stop() {
@@ -55,6 +67,6 @@ func NewConnection(conn *net.TCPConn, connID uint32, funcApi ziface.HandleFunc) 
 		ConnID:    connID,
 		FuncApi:   funcApi,
 		isClosed:  false,
-		ExitChann: make(chan bool),
+		ExitChann: make(chan bool, 1),
 	}
 }
