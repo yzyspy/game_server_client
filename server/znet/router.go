@@ -9,15 +9,15 @@ type BaseRouter struct {
 }
 
 func (b *BaseRouter) PreHandle(request ziface.IRequest) {
-
+	fmt.Println("BaseRouter PreHandle")
 }
 
 func (b *BaseRouter) Handle(request ziface.IRequest) {
-
+	fmt.Println("BaseRouter Handle")
 }
 
 func (b *BaseRouter) PostHandle(request ziface.IRequest) {
-
+	fmt.Println("BaseRouter PostHandle")
 }
 
 type EchoRouter struct {

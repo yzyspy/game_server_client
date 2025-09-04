@@ -36,7 +36,10 @@ func (c *Connection) StartRead() {
 			continue
 		}
 		//	c.FuncApi(c.Conn, buf[:cnt], cnt)
-		req := Request{}
+		req := Request{
+			conn: c,
+			data: buf[:],
+		}
 		c.Router.PreHandle(&req)
 		c.Router.Handle(&req)
 		c.Router.PostHandle(&req)
