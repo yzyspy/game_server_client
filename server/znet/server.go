@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"net"
 	"time"
+	"zinx-server/ziface"
 	_ "zinx-server/ziface"
 )
 
@@ -19,6 +20,9 @@ type Server struct {
 	IP string
 	// IP address the server is bound to (服务绑定的端口)
 	Port int
+
+	Router ziface.IRouter
+
 	// 服务绑定的websocket 端口 (Websocket port the server is bound to)
 	WsPort int
 	// 服务绑定的websocket 路径 (Websocket path the server is bound to)
@@ -52,7 +56,7 @@ func (s *Server) startServer() {
 		}
 		rand.Seed(time.Now().UnixNano())
 		conId := rand.Uint32()
-		connection := NewConnection(conn, conId, echoFunc)
+		connection := NewConnection(conn, conId, s.Router)
 		fmt.Println("New connection:", conId)
 		connection.Start()
 	}
@@ -77,6 +81,10 @@ func (s *Server) Serve() {
 	select {}
 }
 
+func (s *Server) AddRouter(router ziface.IRouter) {
+	s.Router = router
+}
+
 func (s *Server) ServerName() string {
 	return s.Name
 }
@@ -87,6 +95,7 @@ func NewServer(name string) *Server {
 		IPVersion: "tcp4",
 		IP:        "0.0.0.0",
 		Port:      8999,
+		Router:    nil,
 	}
 	return s
 }

@@ -14,9 +14,9 @@ type Connection struct {
 
 	isClosed bool
 
-	FuncApi ziface.HandleFunc
-
 	ExitChann chan bool
+
+	Router ziface.IRouter
 }
 
 func (c *Connection) Start() {
@@ -26,7 +26,7 @@ func (c *Connection) Start() {
 func (c *Connection) StartRead() {
 	buf := make([]byte, 1024)
 	for {
-		cnt, errRead := c.Conn.Read(buf)
+		_, errRead := c.Conn.Read(buf)
 		if errRead != nil {
 			if errRead == io.EOF {
 				//	fmt.Println("Connection closed by remote peer.")
@@ -35,7 +35,11 @@ func (c *Connection) StartRead() {
 			fmt.Println("Read err:", errRead)
 			continue
 		}
-		c.FuncApi(c.Conn, buf[:cnt], cnt)
+		//	c.FuncApi(c.Conn, buf[:cnt], cnt)
+		req := Request{}
+		c.Router.PreHandle(&req)
+		c.Router.Handle(&req)
+		c.Router.PostHandle(&req)
 	}
 }
 
@@ -66,11 +70,11 @@ func (c *Connection) Send(data []byte) error {
 	panic("implement me")
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, funcApi ziface.HandleFunc) *Connection {
+func NewConnection(conn *net.TCPConn, connID uint32, router ziface.IRouter) *Connection {
 	return &Connection{
 		Conn:      conn,
 		ConnID:    connID,
-		FuncApi:   funcApi,
+		Router:    router,
 		isClosed:  false,
 		ExitChann: make(chan bool, 1),
 	}

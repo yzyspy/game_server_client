@@ -7,4 +7,6 @@ type IServer interface {
 	Serve() // Start the business service method(开启业务服务方法)
 	// Get the server name (获取服务器名称)
 	ServerName() string
+
+	AddRouter(router IRouter) // Add a router to the server (向服务器添加路由)
 }

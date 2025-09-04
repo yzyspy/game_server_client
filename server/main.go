@@ -4,5 +4,9 @@ import "zinx-server/znet"
 
 func main() {
 	s := znet.NewServer("zinx server")
+
+	router := znet.EchoRouter{}
+	s.AddRouter(&router)
+
 	s.Serve()
 }
