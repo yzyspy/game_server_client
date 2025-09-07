@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"net"
 	"time"
+	"zinx-server/zconf"
 	"zinx-server/ziface"
 	_ "zinx-server/ziface"
 )
@@ -93,8 +94,8 @@ func NewServer(name string) *Server {
 	s := &Server{
 		Name:      name,
 		IPVersion: "tcp4",
-		IP:        "0.0.0.0",
-		Port:      8999,
+		IP:        zconf.GlobalObject.Host,
+		Port:      zconf.GlobalObject.TCPPort,
 		Router:    nil,
 	}
 	return s
