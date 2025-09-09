@@ -82,3 +82,27 @@ func NewConnection(conn *net.TCPConn, connID uint32, router ziface.IRouter) *Con
 		ExitChann: make(chan bool, 1),
 	}
 }
+
+//
+//// SendMsg directly sends Message data to the remote TCP client.
+//// (直接将Message数据发送数据给远程的TCP客户端)
+//func (c *Connection) SendMsg(msgID uint32, data []byte) error {
+//
+//	if c.isClosed() == true {
+//		return errors.New("connection closed when send msg")
+//	}
+//	// Pack data and send it
+//	msg, err := c.packet.Pack(zpack.NewMsgPackage(msgID, data))
+//	if err != nil {
+//		zlog.Ins().ErrorF("Pack error msg ID = %d", msgID)
+//		return errors.New("Pack error msg ")
+//	}
+//
+//	err = c.Send(msg)
+//	if err != nil {
+//		zlog.Ins().ErrorF("SendMsg err msg ID = %d, data = %+v, err = %+v", msgID, string(msg), err)
+//		return err
+//	}
+//
+//	return nil
+//}
