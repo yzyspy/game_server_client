@@ -5,9 +5,9 @@ import (
 	"math/rand"
 	"net"
 	"time"
-	"zinx-server/zconf"
-	"zinx-server/ziface"
-	_ "zinx-server/ziface"
+	"zinx-lib/zconf"
+	"zinx-lib/ziface"
+	_ "zinx-lib/ziface"
 )
 
 // Server interface implementation, defines a Server service class

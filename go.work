@@ -1,3 +1,7 @@
 go 1.24.4
 
-use ./server
+use (
+	./zinx-client
+	./zinx-lib
+	./zinx-server
+)

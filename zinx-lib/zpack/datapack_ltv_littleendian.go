@@ -1,6 +1,6 @@
 package zpack
 
-import "zinx-server/ziface"
+import "zinx-lib/ziface"
 
 type DataPackLtv struct{}
 

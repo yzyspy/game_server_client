@@ -2,7 +2,7 @@ package znet
 
 import (
 	"fmt"
-	"zinx-server/ziface"
+	"zinx-lib/ziface"
 )
 
 type BaseRouter struct {

@@ -1,7 +1,7 @@
 package znet
 
 import (
-	"zinx-server/ziface"
+	"zinx-lib/ziface"
 )
 
 type Request struct {

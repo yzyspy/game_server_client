@@ -1,7 +1,7 @@
 package zpack
 
 import (
-	"zinx-server/ziface"
+	"zinx-lib/ziface"
 )
 
 type DataPack struct{}

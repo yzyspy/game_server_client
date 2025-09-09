@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"zinx-server/ziface"
+	"zinx-lib/ziface"
 )
 
 type Connection struct {
