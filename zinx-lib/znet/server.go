@@ -48,6 +48,7 @@ func (s *Server) startServer() {
 		return
 	}
 	fmt.Println("Server is running on", listener.Addr().String())
+	idWorker, _ := zutils.NewIDWorker(int64(1))
 	for {
 		conn, err := listener.AcceptTCP()
 		if err != nil {
@@ -55,7 +56,6 @@ func (s *Server) startServer() {
 			continue
 		}
 
-		idWorker, _ := zutils.NewIDWorker(int64(1))
 		conId, _ := idWorker.NextID()
 
 		connection := NewConnection(conn, uint32(conId), s.Router)
