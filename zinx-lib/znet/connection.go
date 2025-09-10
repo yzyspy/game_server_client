@@ -41,7 +41,7 @@ func (c *Connection) StartRead() {
 			continue
 		}
 
-		fmt.Println("recv msg , msgId = %s, dataLen = %s ", msgHead.GetMsgID(), msgHead.GetDataLen())
+		fmt.Printf("recv msg , msgId = %d, dataLen = %d \n", msgHead.GetMsgID(), msgHead.GetDataLen())
 
 		msg := msgHead.(*zpack.Message)
 

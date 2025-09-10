@@ -33,11 +33,11 @@ func main() {
 
 		msgHead, err := dp.Unpack(binaryHead)
 		if err != nil {
-			fmt.Println("unpack head err2:", err)
+			fmt.Printf("unpack head err2:", err)
 			continue
 		}
 
-		fmt.Println("recv msg , msgId = %s, dataLen = %s", msgHead.GetMsgID(), msgHead.GetDataLen())
+		fmt.Printf("recv msg , msgId = %d, dataLen = %d \n", msgHead.GetMsgID(), msgHead.GetDataLen())
 
 		msg := msgHead.(*zpack.Message)
 

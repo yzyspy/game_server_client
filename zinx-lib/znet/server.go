@@ -64,15 +64,6 @@ func (s *Server) startServer() {
 	}
 }
 
-func echoFunc(conn *net.TCPConn, data []byte, cnt int) error {
-	_, errWrite := conn.Write([]byte("echo to client:" + string(data)))
-	if errWrite != nil {
-		fmt.Println("Write err:", errWrite)
-		return errWrite
-	}
-	return nil
-}
-
 // Stop stops the server (停止服务)
 func (s *Server) Stop() {
 }
