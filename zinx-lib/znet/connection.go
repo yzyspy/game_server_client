@@ -17,7 +17,7 @@ type Connection struct {
 
 	ExitChann chan bool
 
-	Router ziface.IRouter
+	msgHandler ziface.IMsgHandle
 }
 
 func (c *Connection) Start() {
@@ -56,10 +56,7 @@ func (c *Connection) StartRead() {
 			conn: c,
 			msg:  msg,
 		}
-
-		c.Router.PreHandle(&req)
-		c.Router.Handle(&req)
-		c.Router.PostHandle(&req)
+		c.msgHandler.DoMsgHandler(&req)
 	}
 }
 
@@ -90,13 +87,13 @@ func (c *Connection) Send(data []byte) error {
 	panic("implement me")
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, router ziface.IRouter) *Connection {
+func NewConnection(conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandle) *Connection {
 	return &Connection{
-		Conn:      conn,
-		ConnID:    connID,
-		Router:    router,
-		isClosed:  false,
-		ExitChann: make(chan bool, 1),
+		Conn:       conn,
+		ConnID:     connID,
+		msgHandler: msgHandler,
+		isClosed:   false,
+		ExitChann:  make(chan bool, 1),
 	}
 }
 

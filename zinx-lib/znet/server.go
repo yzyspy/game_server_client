@@ -21,7 +21,7 @@ type Server struct {
 	// IP address the server is bound to (服务绑定的端口)
 	Port int
 
-	Router ziface.IRouter
+	msgHandler ziface.IMsgHandle
 
 	// 服务绑定的websocket 端口 (Websocket port the server is bound to)
 	WsPort int
@@ -58,7 +58,7 @@ func (s *Server) startServer() {
 
 		conId, _ := idWorker.NextID()
 
-		connection := NewConnection(conn, uint32(conId), s.Router)
+		connection := NewConnection(conn, uint32(conId), s.msgHandler)
 		fmt.Println("New connection:", conId)
 		connection.Start()
 	}
@@ -74,8 +74,8 @@ func (s *Server) Serve() {
 	select {}
 }
 
-func (s *Server) AddRouter(router ziface.IRouter) {
-	s.Router = router
+func (s *Server) AddRouter(msgID uint32, router ziface.IRouter) {
+	s.msgHandler.AddRouter(msgID, router)
 }
 
 func (s *Server) ServerName() string {
@@ -83,12 +83,15 @@ func (s *Server) ServerName() string {
 }
 
 func NewServer(name string) *Server {
+	// 初始化消息处理器
+	handler := newMsgHandler()
+
 	s := &Server{
-		Name:      name,
-		IPVersion: "tcp4",
-		IP:        zconf.GlobalObject.Host,
-		Port:      zconf.GlobalObject.TCPPort,
-		Router:    nil,
+		Name:       name,
+		IPVersion:  "tcp4",
+		IP:         zconf.GlobalObject.Host,
+		Port:       zconf.GlobalObject.TCPPort,
+		msgHandler: handler,
 	}
 	return s
 }

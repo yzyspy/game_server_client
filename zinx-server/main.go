@@ -6,7 +6,7 @@ func main() {
 	s := znet.NewServer("zinx server")
 
 	router := znet.EchoRouter{}
-	s.AddRouter(&router)
+	s.AddRouter(100, &router)
 
 	s.Serve()
 }
