@@ -83,15 +83,12 @@ func (s *Server) ServerName() string {
 }
 
 func NewServer(name string) *Server {
-	// 初始化消息处理器
-	handler := newMsgHandler()
-
 	s := &Server{
 		Name:       name,
 		IPVersion:  "tcp4",
 		IP:         zconf.GlobalObject.Host,
 		Port:       zconf.GlobalObject.TCPPort,
-		msgHandler: handler,
+		msgHandler: newMsgHandler(),
 	}
 	return s
 }

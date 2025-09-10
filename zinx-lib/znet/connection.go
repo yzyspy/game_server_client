@@ -56,7 +56,7 @@ func (c *Connection) StartRead() {
 			conn: c,
 			msg:  msg,
 		}
-		c.msgHandler.DoMsgHandler(&req)
+		go c.msgHandler.DoMsgHandler(&req)
 	}
 }
 
