@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"zinx-lib/ziface"
+	"zinx-lib/zpack"
 )
 
 type Connection struct {
@@ -24,22 +25,37 @@ func (c *Connection) Start() {
 }
 
 func (c *Connection) StartRead() {
-	buf := make([]byte, 1024)
+	dp := zpack.DataPack{}
+
 	for {
-		_, errRead := c.Conn.Read(buf)
-		if errRead != nil {
-			if errRead == io.EOF {
-				//	fmt.Println("Connection closed by remote peer.")
-				continue // 跳出循环，优雅地处理连接关闭
-			}
-			fmt.Println("Read err:", errRead)
+		binaryHead := make([]byte, dp.GetHeadLen())
+		//前面8个字节是消息头,(int32 DateLen + int32 MsgID , 一共8个字节)
+		if _, err := io.ReadFull(c.Conn, binaryHead); err != nil {
+			fmt.Println("read head err:", err)
 			continue
 		}
-		//	c.FuncApi(c.Conn, buf[:cnt], cnt)
+
+		msgHead, err := dp.Unpack(binaryHead)
+		if err != nil {
+			fmt.Println("unpack head err1:", err)
+			continue
+		}
+
+		fmt.Println("recv msg , msgId = {}, dataLen = {} = ", msgHead.GetMsgID(), msgHead.GetDataLen())
+
+		msg := msgHead.(*zpack.Message)
+
+		//再根据DateLen进行第二次读取, 将data取出来
+		msg.Data = make([]byte, msgHead.GetDataLen())
+		if _, err := io.ReadFull(c.Conn, msg.Data); err != nil {
+			fmt.Println("read data err:", err)
+			continue
+		}
 		req := Request{
 			conn: c,
-			data: buf[:],
+			msg:  msg,
 		}
+
 		c.Router.PreHandle(&req)
 		c.Router.Handle(&req)
 		c.Router.PostHandle(&req)

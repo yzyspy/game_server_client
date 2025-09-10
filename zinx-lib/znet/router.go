@@ -2,7 +2,6 @@ package znet
 
 import (
 	"fmt"
-	"io"
 	"zinx-lib/ziface"
 	"zinx-lib/zpack"
 )
@@ -35,18 +34,11 @@ func (e *EchoRouter) Handle(request ziface.IRequest) {
 	//_, errWrite := conn.Write([]byte("EchoRouter..." + string(data)))
 
 	dataPack := zpack.DataPack{}
-	msg, _ := dataPack.Unpack(data)
 
-	data = make([]byte, msg.GetDataLen())
+	msg := zpack.NewMsgPackage(1, data)
+	pack, _ := dataPack.Pack(msg)
 
-	if _, err := io.ReadFull(conn, data); err != nil {
-		fmt.Println("read full data error:", err)
-		return
-	}
-
-	msg.SetData(data)
-
-	if _, err := conn.Write([]byte("EchoRouter..." + string(data))); err != nil {
+	if _, err := conn.Write(pack); err != nil {
 		fmt.Println("write data error:", err)
 		return
 	}
