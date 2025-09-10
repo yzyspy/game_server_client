@@ -41,12 +41,13 @@ func (c *Connection) StartRead() {
 			continue
 		}
 
-		fmt.Println("recv msg , msgId = {}, dataLen = {} = ", msgHead.GetMsgID(), msgHead.GetDataLen())
+		fmt.Println("recv msg , msgId = %s, dataLen = %s ", msgHead.GetMsgID(), msgHead.GetDataLen())
 
 		msg := msgHead.(*zpack.Message)
 
 		//再根据DateLen进行第二次读取, 将data取出来
 		msg.Data = make([]byte, msgHead.GetDataLen())
+
 		if _, err := io.ReadFull(c.Conn, msg.Data); err != nil {
 			fmt.Println("read data err:", err)
 			continue

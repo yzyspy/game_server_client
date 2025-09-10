@@ -2,12 +2,11 @@ package znet
 
 import (
 	"fmt"
-	"math/rand"
 	"net"
-	"time"
 	"zinx-lib/zconf"
 	"zinx-lib/ziface"
 	_ "zinx-lib/ziface"
+	"zinx-lib/zutils"
 )
 
 // Server interface implementation, defines a Server service class
@@ -55,9 +54,11 @@ func (s *Server) startServer() {
 			fmt.Println("Accept err:", err)
 			continue
 		}
-		rand.Seed(time.Now().UnixNano())
-		conId := rand.Uint32()
-		connection := NewConnection(conn, conId, s.Router)
+
+		idWorker, _ := zutils.NewIDWorker(int64(1))
+		conId, _ := idWorker.NextID()
+
+		connection := NewConnection(conn, uint32(conId), s.Router)
 		fmt.Println("New connection:", conId)
 		connection.Start()
 	}

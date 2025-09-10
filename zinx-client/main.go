@@ -17,7 +17,7 @@ func main() {
 	dp := zpack.DataPack{}
 
 	for {
-		message := zpack.NewMsgPackage(1, data)
+		message := zpack.NewMsgPackage(100, data)
 		pack, err := dp.Pack(message)
 		if _, err := conn.Write(pack); err != nil {
 			fmt.Println("write err:", err)
@@ -37,7 +37,7 @@ func main() {
 			continue
 		}
 
-		fmt.Println("recv msg , msgId = {}, dataLen = {} = ", msgHead.GetMsgID(), msgHead.GetDataLen())
+		fmt.Println("recv msg , msgId = %s, dataLen = %s", msgHead.GetMsgID(), msgHead.GetDataLen())
 
 		msg := msgHead.(*zpack.Message)
 

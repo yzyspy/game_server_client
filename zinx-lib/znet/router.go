@@ -30,14 +30,11 @@ func (e *EchoRouter) Handle(request ziface.IRequest) {
 	conn := request.GetConnection().GetTcpConnection()
 	data := request.GetData()
 
-	// 向客户端发送数据
-	//_, errWrite := conn.Write([]byte("EchoRouter..." + string(data)))
-
 	dataPack := zpack.DataPack{}
 
-	msg := zpack.NewMsgPackage(1, data)
+	msg := zpack.NewMsgPackage(101, data)
 	pack, _ := dataPack.Pack(msg)
-
+	// 向客户端发送数据
 	if _, err := conn.Write(pack); err != nil {
 		fmt.Println("write data error:", err)
 		return
