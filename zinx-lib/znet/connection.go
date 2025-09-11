@@ -1,6 +1,7 @@
 package znet
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -17,11 +18,21 @@ type Connection struct {
 
 	ExitChann chan bool
 
+	// Buffered channel used for message communication between the read and write goroutines
+	// (有缓冲管道，用于读、写两个goroutine之间的消息通信)
+	MsgBuffChan chan []byte
+
+	//router管理器
 	msgHandler ziface.IMsgHandle
+
+	// Data packet packaging method
+	// (数据报文封包方式)
+	packet ziface.IDataPack
 }
 
 func (c *Connection) Start() {
 	go c.StartRead()
+	go c.StartWrite()
 }
 
 func (c *Connection) StartRead() {
@@ -82,41 +93,53 @@ func (c *Connection) RemoteAddr() net.Addr {
 	return c.Conn.RemoteAddr()
 }
 
-func (c *Connection) Send(data []byte) error {
-	//TODO implement me
-	panic("implement me")
+func (c *Connection) StartWrite() {
+
 }
 
 func NewConnection(conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandle) *Connection {
 	return &Connection{
-		Conn:       conn,
-		ConnID:     connID,
-		msgHandler: msgHandler,
-		isClosed:   false,
-		ExitChann:  make(chan bool, 1),
+		Conn:        conn,
+		ConnID:      connID,
+		msgHandler:  msgHandler,
+		isClosed:    false,
+		ExitChann:   make(chan bool, 1),
+		MsgBuffChan: make(chan []byte, 1),
+		packet:      zpack.NewDataPack(),
 	}
 }
 
-//
-//// SendMsg directly sends Message data to the remote TCP client.
-//// (直接将Message数据发送数据给远程的TCP客户端)
-//func (c *Connection) SendMsg(msgID uint32, data []byte) error {
-//
-//	if c.isClosed() == true {
-//		return errors.New("connection closed when send msg")
-//	}
-//	// Pack data and send it
-//	msg, err := c.packet.Pack(zpack.NewMsgPackage(msgID, data))
-//	if err != nil {
-//		zlog.Ins().ErrorF("Pack error msg ID = %d", msgID)
-//		return errors.New("Pack error msg ")
-//	}
-//
-//	err = c.Send(msg)
-//	if err != nil {
-//		zlog.Ins().ErrorF("SendMsg err msg ID = %d, data = %+v, err = %+v", msgID, string(msg), err)
-//		return err
-//	}
-//
-//	return nil
-//}
+func (c *Connection) Send(data []byte) error {
+	if c.isClosed == true {
+		return errors.New("connection closed when send msg")
+	}
+	_, err := c.Conn.Write(data)
+	if err != nil {
+		fmt.Printf("SendMsg err data = %+v, err = %+v", data, err)
+		return err
+	}
+	return nil
+}
+
+// SendMsg directly sends Message data to the remote TCP client.
+// (直接将Message数据发送数据给远程的TCP客户端)
+func (c *Connection) SendMsg(msgID uint32, data []byte) error {
+
+	if c.isClosed == true {
+		return errors.New("connection closed when send msg")
+	}
+	// Pack data and send it
+	msg, err := c.packet.Pack(zpack.NewMsgPackage(msgID, data))
+	if err != nil {
+		fmt.Printf("Pack error msg ID = %d", msgID)
+		return errors.New("Pack error msg ")
+	}
+
+	err = c.Send(msg)
+	if err != nil {
+		fmt.Printf("SendMsg err msg ID = %d, data = %+v, err = %+v", msgID, string(msg), err)
+		return err
+	}
+
+	return nil
+}

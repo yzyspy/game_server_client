@@ -3,7 +3,6 @@ package znet
 import (
 	"fmt"
 	"zinx-lib/ziface"
-	"zinx-lib/zpack"
 )
 
 type BaseRouter struct {
@@ -27,17 +26,8 @@ type EchoRouter struct {
 
 func (e *EchoRouter) Handle(request ziface.IRequest) {
 	fmt.Println("EchoRouter Handle")
-	conn := request.GetConnection().GetTcpConnection()
+	conn := request.GetConnection()
 	data := request.GetData()
 
-	dataPack := zpack.DataPack{}
-
-	msg := zpack.NewMsgPackage(101, data)
-	pack, _ := dataPack.Pack(msg)
-	// 向客户端发送数据
-	if _, err := conn.Write(pack); err != nil {
-		fmt.Println("write data error:", err)
-		return
-	}
-	return
+	conn.SendMsg(101, data)
 }
