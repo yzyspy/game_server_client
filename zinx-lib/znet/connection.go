@@ -94,7 +94,14 @@ func (c *Connection) RemoteAddr() net.Addr {
 }
 
 func (c *Connection) StartWrite() {
-
+	select {
+	case msg := <-c.MsgBuffChan:
+		err := c.Send(msg)
+		if err != nil {
+			fmt.Printf("SendMsg err msg ID = %d, data = %+v, err = %+v", string(msg), err)
+		}
+	case <-c.ExitChann:
+	}
 }
 
 func NewConnection(conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandle) *Connection {
@@ -104,7 +111,7 @@ func NewConnection(conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandl
 		msgHandler:  msgHandler,
 		isClosed:    false,
 		ExitChann:   make(chan bool, 1),
-		MsgBuffChan: make(chan []byte, 1),
+		MsgBuffChan: make(chan []byte),
 		packet:      zpack.NewDataPack(),
 	}
 }
@@ -134,12 +141,7 @@ func (c *Connection) SendMsg(msgID uint32, data []byte) error {
 		fmt.Printf("Pack error msg ID = %d", msgID)
 		return errors.New("Pack error msg ")
 	}
-
-	err = c.Send(msg)
-	if err != nil {
-		fmt.Printf("SendMsg err msg ID = %d, data = %+v, err = %+v", msgID, string(msg), err)
-		return err
-	}
-
+	c.MsgBuffChan <- msg
+	//	c.Send(msg)
 	return nil
 }
