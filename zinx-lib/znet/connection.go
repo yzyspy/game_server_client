@@ -94,13 +94,15 @@ func (c *Connection) RemoteAddr() net.Addr {
 }
 
 func (c *Connection) StartWrite() {
-	select {
-	case msg := <-c.MsgBuffChan:
-		err := c.Send(msg)
-		if err != nil {
-			fmt.Printf("SendMsg err msg ID = %d, data = %+v, err = %+v", string(msg), err)
+	for {
+		select {
+		case msg := <-c.MsgBuffChan:
+			err := c.Send(msg)
+			if err != nil {
+				fmt.Printf("SendMsg err msg ID = %d, data = %+v, err = %+v", string(msg), err)
+			}
+		case <-c.ExitChann:
 		}
-	case <-c.ExitChann:
 	}
 }
 
@@ -142,6 +144,7 @@ func (c *Connection) SendMsg(msgID uint32, data []byte) error {
 		return errors.New("Pack error msg ")
 	}
 	c.MsgBuffChan <- msg
-	//	c.Send(msg)
+	//c.Send(msg)
+	fmt.Printf("send msg , msgId = %d, dataLen = %d \n", msgID, len(data))
 	return nil
 }
