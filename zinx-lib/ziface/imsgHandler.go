@@ -10,4 +10,6 @@ type IMsgHandle interface {
 	AddRouter(msgID uint32, router IRouter)
 
 	DoMsgHandler(request IRequest)
+
+	StartWorkerPool()
 }

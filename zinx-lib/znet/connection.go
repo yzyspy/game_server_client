@@ -143,6 +143,7 @@ func (c *Connection) SendMsg(msgID uint32, data []byte) error {
 		fmt.Printf("Pack error msg ID = %d", msgID)
 		return errors.New("Pack error msg ")
 	}
+	//读写分离，给客户端写消息使用单独的协程
 	c.MsgBuffChan <- msg
 	//c.Send(msg)
 	fmt.Printf("send msg , msgId = %d, dataLen = %d \n", msgID, len(data))
