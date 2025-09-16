@@ -41,6 +41,12 @@ func (m *MsgHandler) DoMsgHandler(request ziface.IRequest, workerID int) {
 	router.PostHandle(request)
 }
 
+func (mh *MsgHandler) SendMsgToTaskQueue(request ziface.IRequest) {
+	//workerID := request.GetConnection().GetWorkerID()
+	workerID := 1
+	mh.TaskQueue[workerID] <- request
+}
+
 func (m *MsgHandler) StartOneWorker(workerID int, taskQueue chan ziface.IRequest) {
 	// Continuously wait for messages in the queue
 	// (不断地等待队列中的消息)

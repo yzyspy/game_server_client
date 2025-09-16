@@ -90,6 +90,8 @@ func NewServer(name string) *Server {
 		Port:       zconf.GlobalObject.TCPPort,
 		msgHandler: newMsgHandler(),
 	}
+	//开启处理业务的协程池
+	s.msgHandler.StartWorkerPool()
 	return s
 }
 

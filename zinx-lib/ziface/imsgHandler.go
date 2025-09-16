@@ -14,4 +14,6 @@ type IMsgHandle interface {
 	StartWorkerPool()
 
 	StartOneWorker(workerID int, taskQueue chan IRequest)
+
+	SendMsgToTaskQueue(request IRequest)
 }

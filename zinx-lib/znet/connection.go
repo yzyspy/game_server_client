@@ -67,7 +67,8 @@ func (c *Connection) StartRead() {
 			conn: c,
 			msg:  msg,
 		}
-		go c.msgHandler.DoMsgHandler(&req, 1)
+		//go c.msgHandler.DoMsgHandler(&req, 1)
+		c.msgHandler.SendMsgToTaskQueue(&req)
 	}
 }
 
