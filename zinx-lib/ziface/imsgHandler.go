@@ -9,7 +9,9 @@ type IMsgHandle interface {
 	// (为消息添加具体的处理逻辑, msgID，支持整型，字符串)
 	AddRouter(msgID uint32, router IRouter)
 
-	DoMsgHandler(request IRequest)
+	DoMsgHandler(request IRequest, workerID int)
 
 	StartWorkerPool()
+
+	StartOneWorker(workerID int, taskQueue chan IRequest)
 }
