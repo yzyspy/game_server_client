@@ -43,7 +43,7 @@ func (m *MsgHandler) DoMsgHandler(request ziface.IRequest, workerID int) {
 
 func (mh *MsgHandler) SendMsgToTaskQueue(request ziface.IRequest) {
 	//workerID := request.GetConnection().GetWorkerID()
-	workerID := 1
+	workerID := request.GetConnection().GetConnId() % mh.WorkerPoolSize
 	mh.TaskQueue[workerID] <- request
 }
 
