@@ -28,6 +28,10 @@ type Connection struct {
 	// Data packet packaging method
 	// (数据报文封包方式)
 	packet ziface.IDataPack
+
+	// Which Connection Manager the current connection belongs to
+	// (当前连接是属于哪个Connection Manager的)
+	connManager ziface.IConnManager
 }
 
 func (c *Connection) Start() {
@@ -100,15 +104,15 @@ func (c *Connection) StartWrite() {
 		case msg := <-c.MsgBuffChan:
 			err := c.Send(msg)
 			if err != nil {
-				fmt.Printf("SendMsg err msg ID = %d, data = %+v, err = %+v", string(msg), err)
+				fmt.Printf("SendMsg err msg ID = %d, data = %+v, err = %+v", msg, string(msg), err)
 			}
 		case <-c.ExitChann:
 		}
 	}
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandle) *Connection {
-	return &Connection{
+func newServerConn(server ziface.IServer, conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandle) *Connection {
+	c := &Connection{
 		Conn:        conn,
 		ConnID:      connID,
 		msgHandler:  msgHandler,
@@ -117,6 +121,13 @@ func NewConnection(conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandl
 		MsgBuffChan: make(chan []byte),
 		packet:      zpack.NewDataPack(),
 	}
+	c.connManager = server.GetConnMgr()
+
+	c.connManager.Add(c)
+
+	// Hook connect
+
+	return c
 }
 
 func (c *Connection) Send(data []byte) error {

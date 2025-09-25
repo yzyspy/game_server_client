@@ -23,12 +23,19 @@ type Server struct {
 
 	msgHandler ziface.IMsgHandle
 
+	// Current server's connection manager (当前Server的连接管理器)
+	ConnMgr ziface.IConnManager
+
 	// 服务绑定的websocket 端口 (Websocket port the server is bound to)
 	WsPort int
 	// 服务绑定的websocket 路径 (Websocket path the server is bound to)
 	WsPath string
 	// 服务绑定的kcp 端口 (kcp port the server is bound to)
 	KcpPort int
+}
+
+func (s *Server) GetConnMgr() ziface.IConnManager {
+	return s.ConnMgr
 }
 
 func (s *Server) Start() {
@@ -58,7 +65,7 @@ func (s *Server) startServer() {
 
 		conId, _ := idWorker.NextID()
 
-		connection := NewConnection(conn, uint32(conId), s.msgHandler)
+		connection := newServerConn(s, conn, uint32(conId), s.msgHandler)
 		fmt.Println("New connection:", conId)
 		connection.Start()
 	}
@@ -89,10 +96,13 @@ func NewServer(name string) *Server {
 		IP:         zconf.GlobalObject.Host,
 		Port:       zconf.GlobalObject.TCPPort,
 		msgHandler: newMsgHandler(),
+		ConnMgr:    newConnManager(),
 	}
 	//开启处理业务的协程池
 	s.msgHandler.StartWorkerPool()
 	return s
 }
 
-func init() {}
+func init() {
+
+}

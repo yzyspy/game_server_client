@@ -8,5 +8,7 @@ type IServer interface {
 	// Get the server name (获取服务器名称)
 	ServerName() string
 
-	AddRouter(router IRouter) // Add a router to the server (向服务器添加路由)
+	AddRouter(msgID uint32, router IRouter) // Add a router to the server (向服务器添加路由)
+
+	GetConnMgr() IConnManager // Get the connection manager (获取连接管理器)
 }
