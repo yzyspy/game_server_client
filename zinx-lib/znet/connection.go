@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"sync"
 	"zinx-lib/ziface"
 	"zinx-lib/zpack"
 )
@@ -32,6 +33,22 @@ type Connection struct {
 	// Which Connection Manager the current connection belongs to
 	// (当前连接是属于哪个Connection Manager的)
 	connManager ziface.IConnManager
+
+	// Connection properties
+	// (连接属性)
+	property map[string]interface{}
+
+	// Lock to protect the current property
+	// (保护当前property的锁)
+	propertyLock sync.Mutex
+
+	// Hook function when the current connection is created
+	// (当前连接创建时Hook函数)
+	onConnStart func(conn ziface.IConnection)
+
+	// Hook function when the current connection is disconnected
+	// (当前连接断开时的Hook函数)
+	onConnStop func(conn ziface.IConnection)
 }
 
 func (c *Connection) Start() {

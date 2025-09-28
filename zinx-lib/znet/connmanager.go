@@ -1,6 +1,7 @@
 package znet
 
 import (
+	"strconv"
 	"zinx-lib/ziface"
 	"zinx-lib/zutils"
 )
@@ -10,8 +11,7 @@ type ConnManager struct {
 }
 
 func (c ConnManager) Add(connection ziface.IConnection) {
-	//TODO implement me
-	panic("implement me")
+	c.connections.Set(strconv.Itoa(int(connection.GetConnId())), connection)
 }
 
 func (c ConnManager) Remove(connection ziface.IConnection) {
